@@ -1,6 +1,7 @@
 # Strata
 
 [![ci](https://github.com/boyzwhocried/strata/actions/workflows/ci.yml/badge.svg)](https://github.com/boyzwhocried/strata/actions/workflows/ci.yml)
+[![live lineage](https://img.shields.io/badge/lineage-live-2ea44f?logo=githubpages)](https://boyzwhocried.github.io/strata/)
 
 A small, runnable insurance data platform. It generates a synthetic insurance
 book, lands it as monthly source batches, then transforms it through a
@@ -21,6 +22,10 @@ make up
 
 That generates the data, builds every model, runs 42 tests, and prints the
 reports below.
+
+Prefer not to run anything? Explore the **live lineage graph**, rebuilt from CI
+on every push: https://boyzwhocried.github.io/strata/ . It is the full bronze to
+gold DAG with every model, test, and contract, clickable down to the column.
 
 ## Why this exists
 
