@@ -1,0 +1,10 @@
+# Normalize line endings so the repo is identical on every machine and CI.
+* text=auto eol=lf
+
+# Windows runner stays CRLF; everything else (incl. Makefile, which needs LF
+# tabs on CI) is LF.
+*.ps1 text eol=crlf
+
+# Generated binaries, should never be diffed or normalized.
+*.parquet binary
+*.duckdb binary

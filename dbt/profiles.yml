@@ -1,0 +1,11 @@
+# Local + CI profile. Paths are relative to the repo root, so every dbt
+# command must be run from the repo root (the Makefile and strata.ps1 do this).
+strata:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: data/strata.duckdb
+      threads: 4
+      extensions:
+        - parquet

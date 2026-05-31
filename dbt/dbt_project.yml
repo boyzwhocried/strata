@@ -1,0 +1,24 @@
+name: strata
+version: "1.0.0"
+config-version: 2
+profile: strata
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+clean-targets: ["target", "dbt_packages"]
+
+# Medallion: bronze is a thin view over raw parquet, silver and gold are
+# materialised tables. Schemas are kept literal (bronze/silver/gold) via the
+# generate_schema_name override in macros/.
+models:
+  strata:
+    bronze:
+      +materialized: view
+      +schema: bronze
+    silver:
+      +materialized: table
+      +schema: silver
+    gold:
+      +materialized: table
+      +schema: gold

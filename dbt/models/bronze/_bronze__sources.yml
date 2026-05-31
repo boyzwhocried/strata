@@ -1,0 +1,17 @@
+version: 2
+
+sources:
+  - name: raw
+    description: >
+      Synthetic insurance source extracts written by `python -m generate` as
+      partitioned parquet under data/raw/. Read in place by dbt-duckdb via the
+      external_location below. Facts arrive as monthly batches and may be late
+      or duplicated; nothing here is cleaned.
+    meta:
+      external_location: "data/raw/{name}/*.parquet"
+    tables:
+      - name: agents
+      - name: policies
+      - name: customer_snapshots
+      - name: premium_payments
+      - name: claims

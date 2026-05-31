@@ -1,0 +1,128 @@
+version: 2
+
+models:
+  - name: silver_agents
+    description: Conformed agent dimension.
+    columns:
+      - name: agent_id
+        data_tests: [unique, not_null]
+
+  - name: silver_dim_customer
+    description: >
+      Type-2 slowly changing customer dimension built from monthly snapshots.
+      One row per customer per attribute span. Contract enforced: the column
+      set and types below are a guarantee to every downstream consumer.
+    config:
+      contract:
+        enforced: true
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [customer_id, scd_version]
+    columns:
+      - name: customer_sk
+        description: Surrogate key, md5(customer_id || scd_version).
+        data_type: varchar
+        data_tests: [unique, not_null]
+      - name: customer_id
+        data_type: varchar
+        data_tests: [not_null]
+      - name: scd_version
+        description: 1-based version number within the customer's history.
+        data_type: integer
+      - name: full_name
+        data_type: varchar
+      - name: gender
+        data_type: varchar
+      - name: occupation
+        data_type: varchar
+      - name: city
+        data_type: varchar
+      - name: income_band
+        data_type: varchar
+      - name: risk_class
+        data_type: varchar
+      - name: birth_date
+        data_type: date
+      - name: valid_from
+        description: Inclusive lower bound of this span.
+        data_type: date
+      - name: valid_to
+        description: Exclusive upper bound; null for the open (current) span.
+        data_type: date
+      - name: is_current
+        data_type: boolean
+
+  - name: silver_policies
+    description: Conformed policy master with canonical categoricals.
+    columns:
+      - name: policy_id
+        data_tests: [unique, not_null]
+      - name: customer_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('silver_dim_customer')
+                field: customer_id
+      - name: product_line
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [LIFE, MICRO, HEALTH, GENERAL]
+      - name: currency
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [IDR, USD]
+      - name: status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [ACTIVE, LAPSED, MATURED, CANCELLED]
+
+  - name: silver_premium_payments
+    description: Conformed, deduped premium payment fact with quality flags.
+    columns:
+      - name: payment_id
+        data_tests: [unique, not_null]
+      - name: policy_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('silver_policies')
+                field: policy_id
+      - name: currency
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [IDR, USD]
+      - name: method
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [TRANSFER, AUTODEBIT, CASH, VA]
+
+  - name: silver_claims
+    description: Conformed, deduped claim fact with settlement flags.
+    columns:
+      - name: claim_id
+        data_tests: [unique, not_null]
+      - name: policy_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('silver_policies')
+                field: policy_id
+      - name: status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [FILED, APPROVED, REJECTED, PAID]
+      - name: claim_type
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [DEATH, HOSPITAL, ACCIDENT, MATURITY, SURRENDER]

@@ -1,0 +1,63 @@
+version: 2
+
+models:
+  - name: gold_fct_premium_payments
+    description: Premium payment fact enriched with policy, agent, customer.
+    columns:
+      - name: payment_id
+        data_tests: [unique, not_null]
+      - name: policy_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('silver_policies')
+                field: policy_id
+
+  - name: gold_fct_claims
+    description: Claim fact enriched with policy and agent context.
+    columns:
+      - name: claim_id
+        data_tests: [unique, not_null]
+      - name: policy_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('silver_policies')
+                field: policy_id
+
+  - name: gold_policy_performance
+    description: Per-policy premium collection vs claims paid, with loss ratio.
+    columns:
+      - name: policy_id
+        data_tests: [unique, not_null]
+      - name: premium_collected
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments:
+                min_value: 0
+                inclusive: true
+
+  - name: gold_rpt_reconciliation
+    description: >
+      Bronze to silver row reconciliation per fact stream. Contract enforced.
+    config:
+      contract:
+        enforced: true
+    columns:
+      - name: stream
+        data_type: varchar
+        data_tests: [unique, not_null]
+      - name: bronze_rows
+        data_type: bigint
+      - name: silver_rows
+        data_type: bigint
+      - name: duplicates_removed
+        data_type: bigint
+      - name: late_arrival_rows
+        data_type: bigint
+
+  - name: gold_rpt_data_quality
+    description: Tall data-quality scorecard, one row per metric.
+    columns:
+      - name: metric
+        data_tests: [unique, not_null]

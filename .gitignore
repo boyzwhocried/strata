@@ -1,0 +1,23 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.egg-info/
+build/
+dist/
+
+# Generated data and warehouse (fully reproducible via `make gen` / `make build`)
+data/raw/
+data/*.duckdb
+data/*.duckdb.wal
+
+# dbt artifacts
+dbt/target/
+dbt/dbt_packages/
+dbt/logs/
+dbt/.user.yml
+logs/
+
+# OS
+.DS_Store
+Thumbs.db

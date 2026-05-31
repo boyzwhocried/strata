@@ -1,0 +1,2 @@
+# Generated parquet and the DuckDB file land here. Both are gitignored and
+# fully reproducible: run `make up` (or `./strata.ps1 up`).
