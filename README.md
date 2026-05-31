@@ -1,5 +1,7 @@
 # Strata
 
+[![ci](https://github.com/boyzwhocried/strata/actions/workflows/ci.yml/badge.svg)](https://github.com/boyzwhocried/strata/actions/workflows/ci.yml)
+
 A small, runnable insurance data platform. It generates a synthetic insurance
 book, lands it as monthly source batches, then transforms it through a
 bronze / silver / gold medallion architecture with DuckDB and dbt: slowly
