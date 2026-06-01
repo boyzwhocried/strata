@@ -30,3 +30,13 @@ jobs:
 
       - name: Print reports
         run: python scripts/show_reports.py
+
+      - name: Heartbeat to Pulse
+        if: success()
+        env:
+          PULSE_INGEST_TOKEN: ${{ secrets.PULSE_INGEST_TOKEN }}
+        run: |
+          curl -s -X POST "https://pulse-one-taupe.vercel.app/api/heartbeat" \
+            -H "Authorization: Bearer $PULSE_INGEST_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d '{"system_id":"strata","status":"up","metrics":{"ci":"green","tests":42}}' || true
